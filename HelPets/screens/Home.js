@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
-  StatusBar,
-  Image,
+  Platform,
+  PermissionsAndroid,
   StyleSheet,
-  Button,
+  SafeAreaView,
   Alert,
   TouchableHighlight,
   TouchableOpacity
@@ -14,6 +14,9 @@ import {
 import MapView, {Marker} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 
+PermissionsAndroid.request(
+  PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+);
 export default function Home({route,navigation}) {
   const [minhaLocalizacao, setMinhaLocalizacao] = useState({
     latitude: 37.78825,
@@ -40,34 +43,39 @@ export default function Home({route,navigation}) {
     );
   }, [])
   return (
-    <View style={StyleSheet.absoluteFillObject}>
-      <MapView
-        region={minhaLocalizacao}
-        style={StyleSheet.absoluteFillObject} 
-        showsUserLocation={true}
-        showsMyLocationButton={true}
-        moveOnMarkerPress={true}
-        onPress={e =>
-          setMinhaLocalizacao({
-            ...minhaLocalizacao,
-            latitude: e.nativeEvent.coordinate.latitude,
-            longitude: e.nativeEvent.coordinate.longitude,
-          })
-        }
-      >
-        <Marker
-            coordinate={minhaLocalizacao}
-          />
-        </MapView>
-        <TouchableOpacity
-        style={styles.caixa}
-        onPress={() => navigation.navigate("Publicacao", {local: minhaLocalizacao, user: route.params.userInfo} )}
-        >
-          <Text style={styles.button}>
-            +
-          </Text>
-        </TouchableOpacity>
-    </View>
+    <SafeAreaView style={styles.container}>
+
+
+        <View style={StyleSheet.absoluteFillObject, styles.container}>
+          <MapView
+            region={minhaLocalizacao}
+            style={StyleSheet.absoluteFillObject} 
+            showsUserLocation={true}
+            showsMyLocationButton={true}
+            moveOnMarkerPress={true}
+            onPress={e =>
+              setMinhaLocalizacao({
+                ...minhaLocalizacao,
+                latitude: e.nativeEvent.coordinate.latitude,
+                longitude: e.nativeEvent.coordinate.longitude,
+              })
+            }
+          >
+            <Marker
+                coordinate={minhaLocalizacao}
+              />
+            </MapView>
+            <TouchableOpacity
+            style={styles.botaoAdd}
+            onPress={() => navigation.navigate("Publicacao", {local: minhaLocalizacao, user: route.params.userInfo} )}
+            >
+              <Text style={styles.button}>
+                +
+              </Text>
+            </TouchableOpacity>
+        </View>
+
+    </SafeAreaView>
  );
 }
 const styles = StyleSheet.create({
@@ -75,13 +83,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#00b33c",
     padding: 10,
-    width:70,
+    width:60,
     textAlign: "center",
     fontSize: 30,
-    borderRadius: 100
+    borderRadius: 100,
   },
-  caixa:{
-      left:300,
-      top: 650,
+  botaoAdd:{
+    marginLeft: "auto",
+    marginTop: "auto",
+    paddingEnd: 20,
+    paddingBottom: 20
+  },
+  container: {
+    flex: 1,
   }
 })
