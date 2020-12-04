@@ -35,10 +35,14 @@ export default function Teste ({ route, navigation }) {
           usuario: route.params.user.user.email
         })
         //verifica se há foto pra enviar
-        if(foto.uri){
-          uploadImage(pub)
+        if(!foto.uri){
+          alert('Publicação salva com sucesso!')
+          return;
         }
-        alert('Publicação salva com sucesso!')
+        else{
+          uploadImage(pub)
+          alert('Publicação salva com sucesso!')
+        }        
       }
       else{
         alert('Os campos: Nome, raça e telefone são obrigatórios')

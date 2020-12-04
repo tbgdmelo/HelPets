@@ -7,12 +7,16 @@ import {
   StyleSheet,
   SafeAreaView,
   Alert,
-  TouchableHighlight,
-  TouchableOpacity
+  Image,
+  TouchableOpacity,
+  FlatList
 } from 'react-native'
 
 import MapView, {Marker} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
+
+import { firebase } from '@react-native-firebase/database'
+
 
 PermissionsAndroid.request(
   PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -25,7 +29,7 @@ export default function Home({route,navigation}) {
     longitudeDelta: 0.0421,
   })
 
-  useEffect(() => {
+  /*useEffect(() => {
     Geolocation.getCurrentPosition(
         (position) => {
           setMinhaLocalizacao({
@@ -41,11 +45,49 @@ export default function Home({route,navigation}) {
         },
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
     );
-  }, [])
+  }, [])*/
+
+
+  const [listFire, setListFire] = useState('')
+
+  async function buscarFirebase(){
+    const referencia = await firebase.database().ref('/publicacao')
+    await referencia.on('value', (snapshot)=>{
+      const list = []
+      snapshot.forEach(childItem => {
+        list.push({
+          key: childItem.key,
+          latitude: childItem.val().latitude,
+          longitude: childItem.val().longitude
+        })
+      });
+      setListFire(list)
+    });
+  }
+
+  useEffect(()=> {
+    buscarFirebase()
+    Geolocation.getCurrentPosition(
+      (position) => {
+        setMinhaLocalizacao({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          latitudeDelta: 0.0022,
+          longitudeDelta: 0.0021,
+        })
+        //console.log('minha localização => ', minhaLocalizacao);
+      },
+      (error) => {
+        console.log(error.code, error.message);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+  );
+
+
+  },[])
+
   return (
     <SafeAreaView style={styles.container}>
-
-
         <View style={StyleSheet.absoluteFillObject, styles.container}>
           <MapView
             region={minhaLocalizacao}
@@ -63,7 +105,14 @@ export default function Home({route,navigation}) {
           >
             <Marker
                 coordinate={minhaLocalizacao}
-              />
+                title='TITULO'
+                description='Descrição'
+            >
+              <Image source={require('../images/pata.png')} style={{height: 35, width:35 }} />
+            </Marker>
+            
+            {console.log(listFire)}
+
             </MapView>
             <TouchableOpacity
             style={styles.botaoAdd}
