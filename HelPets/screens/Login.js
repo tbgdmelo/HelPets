@@ -47,16 +47,16 @@ export default function Login( {navigation} ) {
         } catch (error) {
           if (error.code === statusCodes.SIGN_IN_CANCELLED) {
             // when user cancels sign in process,
-            Alert.alert('Process Cancelled')
+            //Alert.alert('Process Cancelled')
           } else if (error.code === statusCodes.IN_PROGRESS) {
             // when in progress already
-            Alert.alert('Process in progress')
+            //Alert.alert('Process in progress')
           } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
             // when play services not available
-            Alert.alert('Play services are not available')
+            //Alert.alert('Play services are not available')
           } else {
             // some other error
-            Alert.alert('Something else went wrong... ', error.toString())
+            //Alert.alert('Something else went wrong... ', error.toString())
             setError(error)
           }
         }
@@ -69,10 +69,10 @@ export default function Login( {navigation} ) {
         } catch (error) {
           if (error.code === statusCodes.SIGN_IN_REQUIRED) {
             // when user hasn't signed in yet
-            Alert.alert('Please Sign in')
+            //Alert.alert('Please Sign in')
             setIsLoggedIn(false)
           } else {
-            Alert.alert('Something else went wrong... ', error.toString())
+            //Alert.alert('Something else went wrong... ', error.toString())
             setIsLoggedIn(false)
           }
         }
@@ -84,7 +84,7 @@ export default function Login( {navigation} ) {
           await GoogleSignin.signOut()
           setIsLoggedIn(false)
         } catch (error) {
-          Alert.alert('Something else went wrong... ', error.toString())
+          //Alert.alert('Something else went wrong... ', error.toString())
         }
       }
 

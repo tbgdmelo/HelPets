@@ -29,30 +29,12 @@ export default function Home({route,navigation}) {
     longitudeDelta: 0.0421,
   })
 
-  /*useEffect(() => {
-    Geolocation.getCurrentPosition(
-        (position) => {
-          setMinhaLocalizacao({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            latitudeDelta: 0.0022,
-            longitudeDelta: 0.0021,
-          })
-          //console.log('minha localização => ', minhaLocalizacao);
-        },
-        (error) => {
-          console.log(error.code, error.message);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
-  }, [])*/
 
-
-  const [listFire, setListFire] = useState('')
+  const [listFire, setListFire] = useState([])
 
   async function buscarFirebase(){
     const referencia = await firebase.database().ref('/publicacao')
-    await referencia.on('value', (snapshot)=>{
+    referencia.on('value', (snapshot)=>{
       const list = []
       snapshot.forEach(childItem => {
         list.push({
@@ -67,6 +49,7 @@ export default function Home({route,navigation}) {
 
   useEffect(()=> {
     buscarFirebase()
+    
     Geolocation.getCurrentPosition(
       (position) => {
         setMinhaLocalizacao({
@@ -105,13 +88,22 @@ export default function Home({route,navigation}) {
           >
             <Marker
                 coordinate={minhaLocalizacao}
-                title='TITULO'
-                description='Descrição'
+                title='Você está aqui'
+                description='Marque um local'
+
             >
               <Image source={require('../images/pata.png')} style={{height: 35, width:35 }} />
             </Marker>
             
-            {console.log(listFire)}
+            {listFire.map((publicacao) =>
+              //console.log(publicacao.latitude)
+              <Marker
+                coordinate={{latitude: publicacao.latitude,
+                   longitude: publicacao.longitude}}
+              >
+                <Image source={require('../images/pata.png')} style={{height: 35, width:35 }} />
+              </Marker>
+            )}
 
             </MapView>
             <TouchableOpacity
