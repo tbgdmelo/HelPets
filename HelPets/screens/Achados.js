@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import {
   View,
-  Text,
   PermissionsAndroid,
   StyleSheet,
   SafeAreaView,
-  Alert,
-  Image,
-  TouchableOpacity
+  Image
 } from 'react-native'
 
 import MapView, {Marker} from 'react-native-maps';
@@ -19,7 +16,7 @@ import { firebase } from '@react-native-firebase/database'
 PermissionsAndroid.request(
   PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
 );
-export default function Home({ route,navigation }) {
+export default function Achados({ }) {
   const [minhaLocalizacao, setMinhaLocalizacao] = useState({
     latitude: 37.78825,
     longitude: -122.4324,
@@ -68,7 +65,6 @@ export default function Home({ route,navigation }) {
   },[])
 
   return (
-    
     <SafeAreaView style={styles.container}>
         <View style={StyleSheet.absoluteFillObject, styles.container}>
           <MapView
@@ -85,14 +81,6 @@ export default function Home({ route,navigation }) {
               })
             }
           >
-            <Marker
-                coordinate={minhaLocalizacao}
-                title='Você está aqui'
-                description='Marque um local'
-
-            >
-              <Image source={require('../images/pata.png')} style={{height: 35, width:35 }} />
-            </Marker>
             
             {listFire.map((publicacao,i) =>
               //console.log(publicacao.latitude)
@@ -106,14 +94,6 @@ export default function Home({ route,navigation }) {
             )}
 
             </MapView>
-            <TouchableOpacity
-            style={styles.botaoAdd}
-            onPress={() => navigation.navigate("Publicacao", {local: minhaLocalizacao, user: route.params.userInfo} )}
-            >
-              <Text style={styles.button}>
-                +
-              </Text>
-            </TouchableOpacity>
         </View>
     </SafeAreaView>
  );

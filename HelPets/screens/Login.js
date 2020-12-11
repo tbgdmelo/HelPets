@@ -5,7 +5,7 @@ import {
   StatusBar,
   Image,
   StyleSheet,
-  Button,
+  TouchableOpacity,
   Alert
 } from 'react-native'
 import {
@@ -102,12 +102,21 @@ export default function Login( {navigation} ) {
               color={GoogleSigninButton.Color.Dark}
               onPress={() => signIn()}
             />
+
             <View style={styles.statusContainer}>
-            {isLoggedIn === false ? (
-                <Text style={styles.message}>Realize o login!</Text>
-            ) : ( navigation.navigate('Home', {userInfo})
-            )}
+              {isLoggedIn === false ? (
+                  <Text style={styles.message}>Realize o login para publicar!</Text>
+              ) : ( navigation.navigate('Home', { userInfo })
+              )}
             </View>
+
+            <TouchableOpacity 
+                style={styles.btnEntrar}
+                onPress={() => navigation.navigate("Achados")}>
+              <Text style= {{color: 'white'}}>Entrar sem login</Text>
+            </TouchableOpacity>
+
+            
           </View>
         </>
       )
@@ -123,7 +132,8 @@ const styles = StyleSheet.create({
       height: 50
     },
     statusContainer: {
-      marginVertical: 20
+      marginVertical: 20,
+      marginTop:-5
     },
     message: {
       fontSize: 20,
@@ -149,5 +159,15 @@ const styles = StyleSheet.create({
     logo: {
         width: 250,
         height: 300,
+    },
+    btnEntrar:{
+      borderWidth:1,
+      borderColor: '#00b33c',
+      width: 150,
+      height: 50,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor:'#024213',
+      borderRadius:10
     }
   })
