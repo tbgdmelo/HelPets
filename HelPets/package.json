@@ -17,6 +17,7 @@
     "@react-native-firebase/database": "^10.1.0",
     "@react-native-firebase/storage": "^10.1.0",
     "@react-native-picker/picker": "^1.9.4",
+    "@react-navigation/bottom-tabs": "^5.11.2",
     "@react-navigation/native": "^5.8.10",
     "@react-navigation/stack": "^5.12.8",
     "react": "17.0.1",
