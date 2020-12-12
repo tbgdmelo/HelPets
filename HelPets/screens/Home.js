@@ -5,13 +5,13 @@ import {
   PermissionsAndroid,
   StyleSheet,
   SafeAreaView,
-  Alert,
   Image,
   TouchableOpacity
 } from 'react-native'
 
-import MapView, {Marker} from 'react-native-maps';
-import Geolocation from 'react-native-geolocation-service';
+import MapView from 'react-native-maps'
+import Geolocation from 'react-native-geolocation-service'
+import {Marker} from 'react-native-maps'
 
 import { firebase } from '@react-native-firebase/database'
 
@@ -27,7 +27,7 @@ export default function Home({ route,navigation }) {
     longitudeDelta: 0.0421,
   })
 
-
+  
   const [listFire, setListFire] = useState([])
 
   async function buscarFirebase(){
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     marginLeft: "auto",
     marginTop: "auto",
     paddingEnd: 20,
-    paddingBottom: 20
+    paddingBottom: 20,
   },
   container: {
     flex: 1,

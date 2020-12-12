@@ -6,13 +6,15 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  Alert
+  SafeAreaView
 } from 'react-native'
+
 import {
   GoogleSigninButton,
   GoogleSignin,
   statusCodes
 } from '@react-native-community/google-signin'
+
 import { WEB_CLIENT_ID } from '../utils/keys'
 import { firebase } from '@react-native-firebase/auth'
 
@@ -22,9 +24,9 @@ export default function Login( {navigation} ) {
     const [error, setError] = useState(null)
 
     useEffect ( ( ) => {
-        getCurrentUserInfo()
-        configureGoogleSign ( )
-      } , [ ] )
+      getCurrentUserInfo()
+      configureGoogleSign ()
+    },[] )
 
     function configureGoogleSign() {
         GoogleSignin.configure({
@@ -89,23 +91,22 @@ export default function Login( {navigation} ) {
       }
 
     return (
-        <>
-          <StatusBar barStyle='dark-content' />
+      <SafeAreaView style={styles.container}>
           <View style={styles.container}>
             <Image
                 style={styles.logo}
                 source={require('../images/logo_sem_fundo.png')}
             />
             <GoogleSigninButton
-              style={styles.signInButton}
+              style={styles.btnLogin}
               size={GoogleSigninButton.Size.Wide}
               color={GoogleSigninButton.Color.Dark}
               onPress={() => signIn()}
             />
 
-            <View style={styles.statusContainer}>
+            <View style={styles.avisoLogin}>
               {isLoggedIn === false ? (
-                  <Text style={styles.message}>Realize o login para publicar!</Text>
+                  <Text style={styles.aviso}>Realize o login para publicar!</Text>
               ) : ( navigation.navigate('Home', { userInfo })
               )}
             </View>
@@ -114,11 +115,11 @@ export default function Login( {navigation} ) {
                 style={styles.btnEntrar}
                 onPress={() => navigation.navigate("Achados")}>
               <Text style= {{color: 'white'}}>Entrar sem login</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> 
 
-            
           </View>
-        </>
+          
+          </SafeAreaView>
       )
 }
 const styles = StyleSheet.create({
@@ -127,34 +128,17 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center'
     },
-    signInButton: {
+    btnLogin: {
       width: 250,
       height: 50
     },
-    statusContainer: {
+    avisoLogin: {
       marginVertical: 20,
       marginTop:-5
     },
-    message: {
+    aviso: {
       fontSize: 20,
       color: 'red'
-    },
-    userInfoContainer: {
-      marginVertical: 20
-    },
-    profileImageContainer: {
-      marginTop: 32,
-      paddingHorizontal: 24,
-      flexDirection: 'row',
-      justifyContent: 'center'
-    },
-    profileImage: {
-      width: 100,
-      height: 100
-    },
-    displayTitle: {
-      fontSize: 22,
-      color: '#010101'
     },
     logo: {
         width: 250,

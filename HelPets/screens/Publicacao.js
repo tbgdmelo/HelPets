@@ -17,14 +17,17 @@ import TextInputMask from 'react-native-text-input-mask'
 
 export default function Teste ({ route, navigation }) {
   
-  const [apelido, setApelido] = useState('');
-  const [raca, setRaca] = useState('');
-  const [contato, setContato] = useState('');
-  const [descricao, setDescricao] = useState('');
+  const [apelido, setApelido] = useState('')
+  const [raca, setRaca] = useState('')
+  const [contato, setContato] = useState('')
+  const [descricao, setDescricao] = useState('')
+  const [urlFoto, setUrlFoto] = useState('')
 
-  function pushFire(){
+  async function pushFire(){
     try{
       if(apelido != '' && raca != '' && contato!=''){
+        const link = await uploadImage()
+        console.log('url pra salvar: '+link) 
         const pub = firebase.database().ref('/publicacao').push({
           apelido: apelido,
           raca: raca,
@@ -32,24 +35,17 @@ export default function Teste ({ route, navigation }) {
           descricao: descricao,
           latitude: route.params.local.latitude,
           longitude: route.params.local.longitude,
-          usuario: route.params.user.user.email
+          usuario: route.params.user.user.email,
+          urlFoto: link
         })
-        //verifica se há foto pra enviar
-        if(!foto.uri){
-          alert('Publicação salva com sucesso!')
-          return;
-        }
-        else{
-          uploadImage(pub)
-          alert('Publicação salva com sucesso!')
-        }        
+        alert('Publicação salva com sucesso!')
       }
       else{
         alert('Os campos: Nome, raça e telefone são obrigatórios')
       }
     }
     catch (error){
-      alert(error)
+      alert('Ocorreu um erro ao salvar')
     }
     finally{
       setApelido('');
@@ -57,6 +53,7 @@ export default function Teste ({ route, navigation }) {
       setContato('');
       setDescricao('');
       setFoto('')
+      setUrlFoto('')
     }
   }
 
@@ -84,33 +81,55 @@ export default function Teste ({ route, navigation }) {
     setFoto(source)
   }
 
-  const uploadImage = async (pub) => {
-    const { uri } = foto
-    //const filename = uri.substring(uri.lastIndexOf('/') + 1)
-    const filenameI = pub.toString()
-    console.log(filename)
-    const filename = filenameI.substring(filenameI.lastIndexOf('/')+1,)
-    console.log(filename)
-    const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
-    
-    const task = storage()
-      .ref('fotos/'+filename)
-      .putFile(uploadUri);
-      
-    task.on('state_changed', snapshot => {
-      
-    });
-    try {
-      await task;
-    } catch (e) {
-      console.error(e);
+  const testando = async()=>{
+    console.log(foto.uri)
+    const filename = await foto.uri.substring(foto.uri.lastIndexOf('/')+1,)
+    console.log('filename: '+filename)
+  }
+
+  const uploadImage = async () => {
+    if(typeof foto === 'undefined'){
+      console.log('retornando...')
+      return;
     }
-    /*
-    alert(
-      'Photo uploaded!',
-      'Your photo has been uploaded to Firebase Cloud Storage!'
-    );
-    console.log('enviou');*/
+    else{
+      console.log('tem foto...')
+      const { uri } = foto
+      //const filename = uri.substring(uri.lastIndexOf('/') + 1)
+      //const filenameI = pub.toString()
+      //console.log(filename)
+      const filename = foto.uri.substring(foto.uri.lastIndexOf('/')+1,)
+      //console.log(filename)
+      const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+      
+      const task = storage()
+        .ref('fotos/'+filename)
+        .putFile(uploadUri);
+        
+      task.on('state_changed', snapshot => {
+      });
+      try {
+        await task;
+      } catch (e) {
+        console.error(e);
+      }
+      console.log('recuperando url da foto...')
+      //RECUPERAR URL DE DOWNLOAD DA IMG
+      const filesRef = await storage().ref('fotos/')
+      const imgURL = await filesRef.child(filename)
+      const fileUrl = await imgURL.getDownloadURL()
+      setUrlFoto(fileUrl)
+      console.log('url feita: '+fileUrl)
+      return fileUrl
+      console.log('url foto: '+ urlFoto)
+      //console.log('url eh: '+fileUrl)
+      /*
+      alert(
+        'Photo uploaded!',
+        'Your photo has been uploaded to Firebase Cloud Storage!'
+      );
+      console.log('enviou');*/
+    } 
     setFoto(null)
   };
 

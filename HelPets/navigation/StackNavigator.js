@@ -17,7 +17,12 @@ const MainStackNavigator = () => {
           title: null,
         }}/>
 
-      <Stack.Screen name="Home" component={BottomTabNavigator} />
+      <Stack.Screen name="Home" component={BottomTabNavigator} 
+      options={{
+        title: 'Mapa',
+        headerLeft: null
+      }}
+      />
 
       <Stack.Screen name="Achados" component={Achados} 
         options={{
