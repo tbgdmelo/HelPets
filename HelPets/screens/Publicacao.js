@@ -22,6 +22,7 @@ export default function Teste ({ route, navigation }) {
   const [contato, setContato] = useState('')
   const [descricao, setDescricao] = useState('')
   const [urlFoto, setUrlFoto] = useState('')
+  const [tipo, setTipo] = useState('')
 
   async function pushFire(){
     try{
@@ -36,7 +37,8 @@ export default function Teste ({ route, navigation }) {
           latitude: route.params.local.latitude,
           longitude: route.params.local.longitude,
           usuario: route.params.user.user.email,
-          urlFoto: link
+          urlFoto: link,
+          tipo: tipo
         })
         alert('Publicação salva com sucesso!')
       }
@@ -135,7 +137,7 @@ export default function Teste ({ route, navigation }) {
 
   const [selectedValue, setSelectedValue] = useState("");
 
-  const racas=['Abissínio','Akita','Angorá','Ashera','Balinês','Basset Hound','Beagle','Bengal',
+  const racas=['Não sei informar...','Abissínio','Akita','Angorá','Ashera','Balinês','Basset Hound','Beagle','Bengal',
   'Bichon Frisé','Bobtail Americano','Bobtail Japonês','Boiadeiro Australiano','Bombay',
   'Border Collie','Boston Terrier','Boxer','Buldogue Francês','Buldogue Inglês','Bull Terrier ',
   'Burmês Vermelho','Burmês','Cane Corso','Cavalier King Charles Spaniel','Chartreux','Chihuahua',
@@ -149,9 +151,9 @@ export default function Teste ({ route, navigation }) {
   'Ragdoll','Rottweiler','Russo Azul','Sagrado da Birmânia','Savannah','Schnauzer','Scottish Fold',
   'Selkirk Rex','Shar-pei','Shiba','Shih Tzu','Siamês','Siberiano','Singapura','Somali','Sphynx',
   'Staffordshire Bull Terrier','Thai','Tonquinês','Toyger','Usuri','Vira-Lata','Weimaraner',
-  'Yorkshire','Outro (não sei informar)']
+  'Yorkshire']
 
-
+  const tipos=['Cachorro','Gato','Outro']
 
   return (        
     <SafeAreaView style={styles.container}>
@@ -167,6 +169,21 @@ export default function Teste ({ route, navigation }) {
               >                
               </TextInput>
 
+              <Text style={{marginTop:10}}>Tipo:</Text>
+              
+              <View style={styles.viewPicker}>
+                <Picker
+                  prompt='Tipo'
+                  selectedValue={tipo}
+                  style={styles.dropdown}
+                  onValueChange={(itemValue, itemIndex) => setTipo(itemValue)}
+                >
+                  {tipos.map((nome, i) =>
+                    <Picker.Item label={nome} value={nome} key={i} color='black'/>
+                  )}
+                </Picker>
+              </View>
+
               <Text style={{marginTop:10}}>Raça:</Text>
               
               <View style={styles.viewPicker}>
@@ -176,12 +193,13 @@ export default function Teste ({ route, navigation }) {
                   style={styles.dropdown}
                   onValueChange={(itemValue, itemIndex) => setRaca(itemValue)}
                 >
-                  <Picker.Item label='Selecione ...' value='0' disabled/>
+                  
                   {racas.map((nome, i) =>
                     <Picker.Item label={nome} value={nome} key={i} color='black'/>
                   )}
                 </Picker>
               </View>
+              
               
               <TextInputMask style={styles.textInput}
                 mask={"([00]) [00000]-[0000]"}
@@ -213,8 +231,8 @@ export default function Teste ({ route, navigation }) {
                   <TouchableOpacity style={styles.btnSalvar} onPress={pushFire}>
                     <Text style= {{color: 'white'}}>Salvar</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.btnCancelar} onPress={() => navigation.navigate("Home")}>
-                    <Text style= {{color: 'white'}}>Cancelar</Text>
+                  <TouchableOpacity style={styles.btnCancelar} onPress={() => navigation.navigate("Achados")}>
+                    <Text style= {{color: 'white'}}>Voltar</Text>
                   </TouchableOpacity>
               </View>
         <Image

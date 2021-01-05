@@ -18,7 +18,7 @@ import {
 import { WEB_CLIENT_ID } from '../utils/keys'
 import { firebase } from '@react-native-firebase/auth'
 
-export default function Login( {navigation} ) {
+export default function Login( {navigation, route} ) {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [userInfo, setUserInfo] = useState(null)
     const [error, setError] = useState(null)
@@ -68,6 +68,8 @@ export default function Login( {navigation} ) {
         try {
           const userInfo = await GoogleSignin.signInSilently()
           setUserInfo(userInfo)
+          setIsLoggedIn(true)
+          navigation.navigate('Publicacao', { local: route.params.local, user: userInfo })
         } catch (error) {
           if (error.code === statusCodes.SIGN_IN_REQUIRED) {
             // when user hasn't signed in yet
@@ -107,15 +109,9 @@ export default function Login( {navigation} ) {
             <View style={styles.avisoLogin}>
               {isLoggedIn === false ? (
                   <Text style={styles.aviso}>Realize o login para publicar!</Text>
-              ) : ( navigation.navigate('Home', { userInfo })
+              ) : ( navigation.navigate('Publicacao', { local: route.params.local, user: userInfo })
               )}
             </View>
-
-            <TouchableOpacity 
-                style={styles.btnEntrar}
-                onPress={() => navigation.navigate("Achados")}>
-              <Text style= {{color: 'white'}}>Entrar sem login</Text>
-            </TouchableOpacity> 
 
           </View>
           

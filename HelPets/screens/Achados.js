@@ -6,7 +6,8 @@ import {
   SafeAreaView,
   Image,
   Text,
-  ListViewBase
+  ListViewBase,
+  TouchableOpacity
 } from 'react-native'
 
 import MapView, {Callout, Marker} from 'react-native-maps';
@@ -16,11 +17,48 @@ import { firebase } from '@react-native-firebase/database'
 
 import  storage  from '@react-native-firebase/storage'
 
+import {
+  GoogleSignin,
+  statusCodes
+} from '@react-native-community/google-signin'
+
+import { WEB_CLIENT_ID } from '../utils/keys'
+
+
 PermissionsAndroid.request(
   PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
 );
 
-export default function Achados({ }) {
+
+export default function Achados({ navigation }) {
+  
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [userInfo, setUserInfo] = useState(null)
+
+  function configureGoogleSign() {
+      GoogleSignin.configure({
+        webClientId: WEB_CLIENT_ID,
+        offlineAccess: false
+      })
+  }
+
+  async function getCurrentUserInfo() {
+    try {
+      const userInfo = await GoogleSignin.signInSilently()
+      setUserInfo(userInfo)
+      setIsLoggedIn(true)
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+        // when user hasn't signed in yet
+        //Alert.alert('Please Sign in')
+        setIsLoggedIn(false)
+      } else {
+        //Alert.alert('Something else went wrong... ', error.toString())
+        setIsLoggedIn(false)
+      }
+    }
+  }
+
   const [minhaLocalizacao, setMinhaLocalizacao] = useState({
     latitude: 37.78825,
     longitude: -122.4324,
@@ -66,6 +104,8 @@ export default function Achados({ }) {
     }
   }
   useEffect(()=> {
+    getCurrentUserInfo()
+    configureGoogleSign ()
     buscarFirebase()
     Geolocation.getCurrentPosition(
       (position) => {
@@ -95,7 +135,24 @@ export default function Achados({ }) {
             showsUserLocation={true}
             showsMyLocationButton={true}
             moveOnMarkerPress={true}
+            onPress={e =>
+              setMinhaLocalizacao({
+                ...minhaLocalizacao,
+                latitude: e.nativeEvent.coordinate.latitude,
+                longitude: e.nativeEvent.coordinate.longitude,
+              })
+            }
           >
+            <Marker
+                coordinate={minhaLocalizacao}
+                title='Você está aqui'
+                description='Marque um local'
+
+            >
+              <Image source={require('../images/pata.png')} style={{height: 35, width:35 }} />
+            </Marker>
+
+
             {listFire.map((publicacao,i) =>
               //console.log(publicacao.latitude)
               <Marker
@@ -128,14 +185,39 @@ export default function Achados({ }) {
 
               </Marker>
             )}
-
             </MapView>
+            
+            <TouchableOpacity
+            style={styles.botaoAdd}
+            onPress={() => {isLoggedIn === false ? (
+              navigation.navigate('Login',{local: minhaLocalizacao})
+          ) : ( navigation.navigate('Publicacao', { local: minhaLocalizacao, user: userInfo })
+          )}}
+            >
+              <Text style={styles.button}>
+                +
+              </Text>
+            </TouchableOpacity>
         </View>
     </SafeAreaView>
  );
 }
 const styles = StyleSheet.create({
-
+  button: {
+    alignItems: "center",
+    backgroundColor: "#00b33c",
+    padding: 10,
+    width:60,
+    textAlign: "center",
+    fontSize: 30,
+    borderRadius: 100,
+  },
+  botaoAdd:{
+    marginLeft: "auto",
+    marginTop: "auto",
+    paddingEnd: 20,
+    paddingBottom: 20,
+  },
   container: {
     flex: 1,
   },

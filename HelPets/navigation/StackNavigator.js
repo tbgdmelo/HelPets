@@ -11,10 +11,11 @@ const Stack = createStackNavigator()
 
 const MainStackNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName="Login" >
+    <Stack.Navigator initialRouteName="Achados" >
 
       <Stack.Screen name="Login" component={TelaLogin} options={{
           title: null,
+          headerLeft: null
         }}/>
 
       <Stack.Screen name="Home" component={BottomTabNavigator} 
@@ -26,11 +27,14 @@ const MainStackNavigator = () => {
 
       <Stack.Screen name="Achados" component={Achados} 
         options={{
-          title: 'Pets Encontrados',
+          title: 'Mapa HelPets',
         }}
       />
         
-      <Stack.Screen name="Publicacao" component={Publicacao} />
+      <Stack.Screen name="Publicacao" component={Publicacao} 
+      options={{
+        headerLeft: null
+      }}/>
 
     </Stack.Navigator>
   );
