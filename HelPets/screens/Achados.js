@@ -162,9 +162,9 @@ export default function Achados({ navigation }) {
               >
                 <Image source={require('../images/pata.png')} style={{height: 35, width:35 }} />
                 
-                <Callout tooltip>
+                <Callout tooltip
+                onPress={() => navigation.navigate('InfoPublicacao',{ publicacao: publicacao.key })}>
                   <View>
-                    
                     <View style={styles.bubble}>
                       <Text style={styles.name}>{publicacao.raca}</Text>
                       <Text style={styles.image}>

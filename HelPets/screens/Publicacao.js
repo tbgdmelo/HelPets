@@ -15,14 +15,14 @@ import  storage  from '@react-native-firebase/storage'
 import {Picker} from '@react-native-picker/picker'
 import TextInputMask from 'react-native-text-input-mask'
 
-export default function Teste ({ route, navigation }) {
+export default function Publicacao ({ route, navigation }) {
   
   const [apelido, setApelido] = useState('')
   const [raca, setRaca] = useState('')
   const [contato, setContato] = useState('')
   const [descricao, setDescricao] = useState('')
   const [urlFoto, setUrlFoto] = useState('')
-  const [tipo, setTipo] = useState('')
+  const [tipo, setTipo] = useState('Cachorro')
 
   async function pushFire(){
     try{
@@ -70,16 +70,18 @@ export default function Teste ({ route, navigation }) {
 
   function imagePickerCallback (data){
     if(data.didCancel){ //Cancelou a ação
+      console.log('cancelou');
       return;
     }
     if(data.error){ //Algum erro
+      console.log('erro');
       return;
     }
     if(!data.uri){
+      console.log('sem img');
       return;
     }
     const source = { uri: data.uri };
-    //console.log(source);
     setFoto(source)
   }
 
@@ -137,34 +139,26 @@ export default function Teste ({ route, navigation }) {
 
   const [selectedValue, setSelectedValue] = useState("");
 
-  const racas=['Não sei informar...','Abissínio','Akita','Angorá','Ashera','Balinês','Basset Hound','Beagle','Bengal',
-  'Bichon Frisé','Bobtail Americano','Bobtail Japonês','Boiadeiro Australiano','Bombay',
-  'Border Collie','Boston Terrier','Boxer','Buldogue Francês','Buldogue Inglês','Bull Terrier ',
-  'Burmês Vermelho','Burmês','Cane Corso','Cavalier King Charles Spaniel','Chartreux','Chihuahua',
-  'Chow Chow','Cocker Spaniel Inglês','Colorpoint de Pêlo Curto','Cornish Rex','Curl Americano',
-  'Cymric','Dachshund','Dálmata','Devon Rex','Doberman','Dogo Argentino','Dogue Alemão',
-  'Fila Brasileiro','Golden Retriever','Himalaio','Husky Siberiano','Jack Russell Terrier',
-  'Jaguatirica','Javanês','Korat','Labrador Retriever','LaPerm','Lhasa Apso','Lulu da Pomerânia',
-  'Maine Coon','Maltês','Manx','Mastiff Inglês','Mastim Tibetano','Mau Egípcio','Mist Australiano',
-  'Munchkin','Norueguês da Floresta','Ocicat','Pastor Alemão','Pastor Australiano',
-  'Pastor de Shetland','Pequinês','Persa','Pinscher','Pit Bull ','Pixie-bob','Poodle','Pug',
-  'Ragdoll','Rottweiler','Russo Azul','Sagrado da Birmânia','Savannah','Schnauzer','Scottish Fold',
-  'Selkirk Rex','Shar-pei','Shiba','Shih Tzu','Siamês','Siberiano','Singapura','Somali','Sphynx',
-  'Staffordshire Bull Terrier','Thai','Tonquinês','Toyger','Usuri','Vira-Lata','Weimaraner',
-  'Yorkshire']
+  const tipos=['Cachorro','Gato']
 
-  const tipos=['Cachorro','Gato','Outro']
+  const cats=['Não sei informar','Angorá', 'British Shorthair', 'Burmese', 'Himalaia', 'Maine Coon','Persa', 'Ragdoll'
+  , 'Siamês', 'Siberiano', 'Sphynx', 'Vira Lata', 'Outro']
+
+  const dogs=['Não sei informar', 'Basset',  'Beagle', 'Boder Collie', 'Buldogue', 'Dachshund', 
+  'Golden Retriever', 'Husky Siberiano', 'Labrador', 'Lhasa Apso', 'Maltês', 'Pastor-Alemão', 
+  'Pinscher', 'Pit Bull', 'Poodle','Pug', 'Rottweiller', 'Schnauzer', 'Shih Tzu', 'Spitz Alemão',
+   'Vira Lata', 'Yorkshire','Outro']
 
   return (        
     <SafeAreaView style={styles.container}>
       <ScrollView>
       <View style={styles.container}>
               <Text>
-                  Descreva as informações sobre o seu pet:
+                  Descreva as informações sobre o pet:
               </Text>
 
               <TextInput style={styles.textInput} 
-                placeholder="Nome do PET"
+                placeholder="Nome do PET (Deixe em branco caso encontrado)"
                 onChangeText={apelido => setApelido(apelido)} value={apelido}
               >                
               </TextInput>
@@ -187,19 +181,34 @@ export default function Teste ({ route, navigation }) {
               <Text style={{marginTop:10}}>Raça:</Text>
               
               <View style={styles.viewPicker}>
-                <Picker
-                  prompt='Raça do Pet'
-                  selectedValue={raca}
-                  style={styles.dropdown}
-                  onValueChange={(itemValue, itemIndex) => setRaca(itemValue)}
-                >
-                  
-                  {racas.map((nome, i) =>
-                    <Picker.Item label={nome} value={nome} key={i} color='black'/>
-                  )}
-                </Picker>
+                {tipo === 'Cachorro' ? (
+                    <Picker
+                    prompt='Raça do Cachorro'
+                    selectedValue={raca}
+                    style={styles.dropdown}
+                    onValueChange={(itemValue, itemIndex) => setRaca(itemValue)}
+                  >
+                    
+                    {dogs.map((nome, i) =>
+                      <Picker.Item label={nome} value={nome} key={i} color='black'/>
+                    )}
+                  </Picker>
+
+                ) : (
+                  <Picker
+                    prompt='Raça do Gato'
+                    selectedValue={raca}
+                    style={styles.dropdown}
+                    onValueChange={(itemValue, itemIndex) => setRaca(itemValue)}
+                  >
+                    
+                    {cats.map((nome, i) =>
+                      <Picker.Item label={nome} value={nome} key={i} color='black'/>
+                    )}
+                  </Picker>
+                )
+                }
               </View>
-              
               
               <TextInputMask style={styles.textInput}
                 mask={"([00]) [00000]-[0000]"}
@@ -210,7 +219,7 @@ export default function Teste ({ route, navigation }) {
               </TextInputMask>
               
               <TextInput style={styles.descricaoInput}
-                placeholder="Descrição (Escreva informações que achar importante sobre seu pet)"
+                placeholder="Descrição (Escreva informações que achar importante sobre o pet)"
                 multiline={true}
                 onChangeText={descricao => setDescricao(descricao)} value={descricao}
               >

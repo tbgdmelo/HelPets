@@ -6,6 +6,7 @@ import Homepage from '../screens/Home'
 import TelaLogin from '../screens/Login'
 import Publicacao from '../screens/Publicacao'
 import Achados from '../screens/Achados'
+import InfoPublicacao from '../screens/InfoPublicacao'
 
 const Stack = createStackNavigator()
 
@@ -35,6 +36,12 @@ const MainStackNavigator = () => {
       options={{
         headerLeft: null
       }}/>
+
+      <Stack.Screen name="InfoPublicacao" component={InfoPublicacao}
+        options={{
+          title: 'Informações'
+        }}
+      />
 
     </Stack.Navigator>
   );
