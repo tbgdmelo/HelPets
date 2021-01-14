@@ -25,6 +25,8 @@ import {
 import { WEB_CLIENT_ID } from '../utils/keys'
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 
 PermissionsAndroid.request(
   PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -44,10 +46,12 @@ export default function Achados({ navigation }) {
   }
 
   const tipos = [
-    {tipo:'Gato'},
-    {tipo:'Cachorro'},
-    {tipo:'Todos'}
+    {tipo:'Gato', icon: <Icon name="cat" size={20} color="#00b33c" />},
+    {tipo:'Cachorro', icon: <Icon name="dog" size={20} color="#00b33c" />},
+    {tipo:'Todos', icon: <Icon name="collapse-all" size={20} color="#00b33c"/>}
   ]
+
+  const [filtroRaca, setFiltroRaca] = useState('')
 
   async function getCurrentUserInfo() {
     try {
@@ -201,7 +205,9 @@ export default function Achados({ navigation }) {
             <View style={styles.caixaBusca}>
               <TextInput placeholder="Busque por raça ..." placeholderTextColor="#000" autoCapitalize='none'
               style={{flex:1, padding:0}}
+              onChangeText={filtroRaca => setFiltroRaca(filtroRaca)} value={filtroRaca}
               />
+              <Icon name="text-search" size={20} color="#00b33c" />
             </View>
 
             <ScrollView
@@ -215,7 +221,8 @@ export default function Achados({ navigation }) {
                 <TouchableOpacity key={index} style={styles.botaoTipo}
                   onPress={() => setFiltro(tipo.tipo)}
                 >
-                  <Text>{tipo.tipo}</Text>
+                  {tipo.icon}
+                  <Text> {tipo.tipo}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -230,7 +237,7 @@ export default function Achados({ navigation }) {
               <Text style={styles.button}>
                 +
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity>        
         </View>
     </SafeAreaView>
  );
