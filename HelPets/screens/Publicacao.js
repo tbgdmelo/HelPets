@@ -26,7 +26,7 @@ export default function Publicacao ({ route, navigation }) {
 
   async function pushFire(){
     try{
-      if(apelido != '' && raca != '' && contato!=''){
+      if(raca != '' && contato!=''){
         const link = await uploadImage()
         console.log('url pra salvar: '+link) 
         const pub = firebase.database().ref('/publicacao').push({
@@ -43,7 +43,7 @@ export default function Publicacao ({ route, navigation }) {
         alert('Publicação salva com sucesso!')
       }
       else{
-        alert('Os campos: Nome, raça e telefone são obrigatórios')
+        alert('Os campos: Raça e telefone são obrigatórios')
       }
     }
     catch (error){

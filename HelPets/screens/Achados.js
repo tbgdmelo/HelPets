@@ -23,6 +23,7 @@ import {
 } from '@react-native-community/google-signin'
 
 import { WEB_CLIENT_ID } from '../utils/keys'
+import { ScrollView, TextInput } from 'react-native-gesture-handler';
 
 
 PermissionsAndroid.request(
@@ -41,6 +42,12 @@ export default function Achados({ navigation }) {
         offlineAccess: false
       })
   }
+
+  const tipos = [
+    {tipo:'Gato'},
+    {tipo:'Cachorro'},
+    {tipo:'Todos'}
+  ]
 
   async function getCurrentUserInfo() {
     try {
@@ -66,6 +73,7 @@ export default function Achados({ navigation }) {
     longitudeDelta: 0.0421,
   })
 
+  const [filtro, setFiltro] = useState('Todos');
 
   const [listFire, setListFire] = useState([])
 
@@ -79,7 +87,11 @@ export default function Achados({ navigation }) {
           latitude: childItem.val().latitude,
           longitude: childItem.val().longitude,
           raca: childItem.val().raca,
-          foto: childItem.val().urlFoto
+          foto: childItem.val().urlFoto,
+          apelido: childItem.val().apelido,
+          contato: childItem.val().contato,
+          descricao: childItem.val().descricao,
+          tipo: childItem.val().tipo
         })
       });
       setListFire(list)
@@ -124,7 +136,7 @@ export default function Achados({ navigation }) {
   );
 
 
-  },[])
+  },[filtro])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -152,9 +164,8 @@ export default function Achados({ navigation }) {
               <Image source={require('../images/pata.png')} style={{height: 35, width:35 }} />
             </Marker>
 
-
             {listFire.map((publicacao,i) =>
-              //console.log(publicacao.latitude)
+              
               <Marker
                 key={i}
                 coordinate={{latitude: publicacao.latitude,
@@ -163,7 +174,7 @@ export default function Achados({ navigation }) {
                 <Image source={require('../images/pata.png')} style={{height: 35, width:35 }} />
                 
                 <Callout tooltip
-                onPress={() => navigation.navigate('InfoPublicacao',{ publicacao: publicacao.key })}>
+                onPress={() => navigation.navigate('InfoPublicacao',{ publicacao: publicacao })}>
                   <View>
                     <View style={styles.bubble}>
                       <Text style={styles.name}>{publicacao.raca}</Text>
@@ -186,7 +197,29 @@ export default function Achados({ navigation }) {
               </Marker>
             )}
             </MapView>
-            
+
+            <View style={styles.caixaBusca}>
+              <TextInput placeholder="Busque por raça ..." placeholderTextColor="#000" autoCapitalize='none'
+              style={{flex:1, padding:0}}
+              />
+            </View>
+
+            <ScrollView
+            horizontal
+            scrollEventThrottle={1}
+            showsHorizontalScrollIndicator={false}
+            height={50}
+            style={styles.tiposBusca}
+            >
+              {tipos.map((tipo, index)=>(
+                <TouchableOpacity key={index} style={styles.botaoTipo}
+                  onPress={() => setFiltro(tipo.tipo)}
+                >
+                  <Text>{tipo.tipo}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            {console.log(filtro)}
             <TouchableOpacity
             style={styles.botaoAdd}
             onPress={() => {isLoggedIn === false ? (
@@ -260,5 +293,39 @@ const styles = StyleSheet.create({
   },
   image:{
     flex:1,
+  },
+  caixaBusca:{
+    position: 'absolute',
+    marginTop: 15,
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    width: '90%',
+    alignSelf: 'center',
+    borderRadius: 5,
+    padding: 10,
+    shadowColor: '#ccc',
+    shadowOffset:{width:0, height:3},
+    shadowOpacity: 0.5,
+    shadowRadius:5,
+    elevation:10
+  },
+  tiposBusca:{
+    position:'absolute',
+    top: 70,
+    paddingHorizontal: 10
+  },
+  botaoTipo:{
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius:20,
+    padding:8,
+    paddingHorizontal: 20,
+    marginHorizontal: 10,
+    height:35,
+    shadowColor: '#ccc',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 10,
   }
 })
