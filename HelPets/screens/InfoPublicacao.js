@@ -5,7 +5,9 @@ import {
   Image,
   StyleSheet,
   SafeAreaView,
-  TouchableOpacity
+  TouchableOpacity,
+  Linking,
+  Platform
 } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 
@@ -16,22 +18,15 @@ import  storage  from '@react-native-firebase/storage'
 import Skeleton from '../skeleton'
 
 
-export default function InfoPublicacao( {route, navigation} ) {
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-    const [loading, setLoading] = useState(true)
 
-    useEffect(() =>{
-        let timer = setInterval(() =>{
-            setLoading(false)
-        }, 3000)
-    },[])
+export default function InfoPublicacao( {route} ) {
 
     return (
     <SafeAreaView style={styles.container}>
         <ScrollView>
             <View style={styles.container}>
-
-            <Skeleton visible={loading} style={styles.container}>
                 <Image source= {{ uri: route.params.publicacao.foto ? route.params.publicacao.foto :
                             'https://image.shutterstock.com/image-vector/cat-dog-pet-love-logo-600w-1303349926.jpg'}}            
                  style={styles.avatar}/>
@@ -41,17 +36,22 @@ export default function InfoPublicacao( {route, navigation} ) {
                 <Text style={styles.info}>Atende por: {route.params.publicacao.apelido ? route.params.publicacao.apelido:
                 'Não informado'}
                 </Text>
-                <Text style={styles.info}>Contato: {route.params.publicacao.contato}</Text>
-                <Text style={styles.info}>Descrição: {route.params.publicacao.descricao ? route.params.publicacao.descricao:
+                <View style= {{ flexDirection:'row', justifyContent: 'space-between' }}>
+                    <Text style={styles.info}>Contato: {route.params.publicacao.contato}   </Text>
+                        <TouchableOpacity
+                            style={styles.callButton}
+                            onPress={() => {Linking.openURL('tel:${'+route.params.publicacao.contato+'}')}}
+                        >
+                            <Icon name="phone-outline" color={'#fff'} size={30} />
+                        </TouchableOpacity>
+                </View>
+                <Text style={styles.infoDesc}>Descrição: {route.params.publicacao.descricao ? route.params.publicacao.descricao:
                 'Não informado'}</Text>            
 
                 <Image
                     style={styles.nome}
                     source={require('../images/nome.png')}  
                 />
-            </Skeleton>
-
-            
             </View>
         </ScrollView>
     </SafeAreaView>
@@ -72,6 +72,12 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginLeft:10
     },
+    infoDesc:{
+        marginTop:15,
+        fontSize: 20,
+        marginLeft:10,
+        textAlign: 'center'
+    },
     avatar:{
         width:200,
         height:200,
@@ -83,4 +89,13 @@ const styles = StyleSheet.create({
         marginLeft:10,
         fontWeight: "bold"
     },
+    callButton:{
+        backgroundColor: '#006600',
+        borderRadius: 150,
+        width: 40,
+        height: 40,
+        alignSelf: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
+    }
   })

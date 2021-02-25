@@ -10,19 +10,25 @@ import {
   TextInput
 } from 'react-native'
 import { firebase } from '@react-native-firebase/database'
-import ImagePicker from 'react-native-image-picker'
 import  storage  from '@react-native-firebase/storage'
 import {Picker} from '@react-native-picker/picker'
 import TextInputMask from 'react-native-text-input-mask'
 
+import * as ImagePicker from 'react-native-image-picker'
+
+import Skeleton from '../skeleton'
+
 export default function Publicacao ({ route, navigation }) {
-  
+  const [response, setResponse] = React.useState(null)
+
+
   const [apelido, setApelido] = useState('')
-  const [raca, setRaca] = useState('')
+  const [raca, setRaca] = useState('Não sei informar')
   const [contato, setContato] = useState('')
   const [descricao, setDescricao] = useState('')
   const [urlFoto, setUrlFoto] = useState('')
   const [tipo, setTipo] = useState('Cachorro')
+  const [statusPet, setStatusPet] = useState('Encontrado')
 
   async function pushFire(){
     try{
@@ -38,8 +44,11 @@ export default function Publicacao ({ route, navigation }) {
           longitude: route.params.local.longitude,
           usuario: route.params.user.user.email,
           urlFoto: link,
-          tipo: tipo
+          tipo: tipo,
+          statusPet: statusPet,
+          ativo: true
         })
+        setLoading(false)
         alert('Publicação salva com sucesso!')
       }
       else{
@@ -51,39 +60,16 @@ export default function Publicacao ({ route, navigation }) {
     }
     finally{
       setApelido('');
-      setRaca('');
+      setRaca('Não sei informar');
       setContato('');
       setDescricao('');
       setFoto('')
       setUrlFoto('')
+      setStatusPet('Encontrado')
     }
   }
 
   const [foto, setFoto] = useState()
-
-  const imagePickerOptions ={
-    title: 'Envie uma foto',
-    cancelButtonTitle: 'Cancelar',
-    takePhotoButtonTitle: 'Tirar foto da câmera',
-    chooseFromLibraryButtonTitle: 'Escolher da galeria',
-  }
-
-  function imagePickerCallback (data){
-    if(data.didCancel){ //Cancelou a ação
-      console.log('cancelou');
-      return;
-    }
-    if(data.error){ //Algum erro
-      console.log('erro');
-      return;
-    }
-    if(!data.uri){
-      console.log('sem img');
-      return;
-    }
-    const source = { uri: data.uri };
-    setFoto(source)
-  }
 
   const testando = async()=>{
     console.log(foto.uri)
@@ -98,6 +84,9 @@ export default function Publicacao ({ route, navigation }) {
     }
     else{
       console.log('tem foto...')
+      
+      setLoading(true)
+
       const { uri } = foto
       //const filename = uri.substring(uri.lastIndexOf('/') + 1)
       //const filenameI = pub.toString()
@@ -149,13 +138,36 @@ export default function Publicacao ({ route, navigation }) {
   'Pinscher', 'Pit Bull', 'Poodle','Pug', 'Rottweiller', 'Schnauzer', 'Shih Tzu', 'Spitz Alemão',
    'Vira Lata', 'Yorkshire','Outro']
 
+  const status_pet =['Encontrado', 'Perdido']
+
+  const [loading, setLoading] = useState(false);
+
   return (        
     <SafeAreaView style={styles.container}>
       <ScrollView>
       <View style={styles.container}>
+        <Skeleton visible={loading}>
               <Text>
                   Descreva as informações sobre o pet:
               </Text>
+
+              <Text style={{marginTop:10}}>O pet foi :<Text style={{color:'red'}}>*</Text></Text>
+              
+              <View style={styles.viewPicker}>
+                    <Picker
+                    prompt='Status do Pet'
+                    selectedValue={statusPet}
+                    style={styles.dropdown}
+                    onValueChange={(itemValue, itemIndex) => setStatusPet(itemValue)}
+                  >
+                    
+                    {status_pet.map((status, i) =>
+                      <Picker.Item label={status} value={status} key={i} color='black'/>
+                    )}
+                  </Picker>
+              </View>
+
+              <Text style={{marginTop:10}}>Nome do Pet (Opcional)</Text>
 
               <TextInput style={styles.textInput} 
                 placeholder="Nome do PET (Deixe em branco caso encontrado)"
@@ -163,7 +175,7 @@ export default function Publicacao ({ route, navigation }) {
               >                
               </TextInput>
 
-              <Text style={{marginTop:10}}>Tipo:</Text>
+              <Text style={{marginTop:10}}>Tipo <Text style={{color:'red'}}>*</Text></Text>
               
               <View style={styles.viewPicker}>
                 <Picker
@@ -178,7 +190,7 @@ export default function Publicacao ({ route, navigation }) {
                 </Picker>
               </View>
 
-              <Text style={{marginTop:10}}>Raça:</Text>
+              <Text style={{marginTop:10}}>Raça <Text style={{color:'red'}}>*</Text></Text>
               
               <View style={styles.viewPicker}>
                 {tipo === 'Cachorro' ? (
@@ -209,7 +221,8 @@ export default function Publicacao ({ route, navigation }) {
                 )
                 }
               </View>
-              
+
+              <Text style={{marginTop:10}}>Contato <Text style={{color:'red'}}>*</Text></Text>
               <TextInputMask style={styles.textInput}
                 mask={"([00]) [00000]-[0000]"}
                 placeholder="Telefone para Contato"
@@ -218,6 +231,7 @@ export default function Publicacao ({ route, navigation }) {
               >
               </TextInputMask>
               
+              <Text style={{marginTop:10}}>Descrição (Opcional)</Text>
               <TextInput style={styles.descricaoInput}
                 placeholder="Descrição (Escreva informações que achar importante sobre o pet)"
                 multiline={true}
@@ -226,11 +240,43 @@ export default function Publicacao ({ route, navigation }) {
               </TextInput>
               
               <View style ={{flexDirection: 'row', justifyContent: 'space-between', alignItems: "center", marginTop:20}}>
-                <TouchableOpacity style={styles.btnFoto}
-                  onPress={() => ImagePicker.showImagePicker(imagePickerOptions, imagePickerCallback)}
-                >
-                  <Text style= {{color: 'white'}}>Foto</Text>
-                </TouchableOpacity>
+                <View>
+                  <TouchableOpacity style={styles.btnFoto}
+                    onPress={() =>
+                      ImagePicker.launchCamera(
+                        {
+                          mediaType: 'photo',
+                          includeBase64: false,
+                          maxHeight: 1000,
+                          maxWidth: 1000,
+                        },
+                        (foto) => {
+                          setFoto(foto);
+                        },
+                      )
+                    }
+                  >
+                    <Text style= {{color: 'white'}}>Foto da Câmera</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.btnFoto}
+                   onPress={() =>
+                    ImagePicker.launchImageLibrary(
+                      {
+                        mediaType: 'photo',
+                        includeBase64: false,
+                        maxHeight: 1000,
+                        maxWidth: 1000,
+                      },
+                      (foto) => {
+                        setFoto(foto);
+                      },
+                    )
+                  }
+                  >
+                    <Text style= {{color: 'white'}}>Foto da Galeria</Text>
+                  </TouchableOpacity>
+                </View>
                 <Image source= {{ uri: foto ? foto.uri :
                 'https://image.shutterstock.com/image-vector/cat-dog-pet-love-logo-600w-1303349926.jpg'}}
                 style={styles.fotoPet}/>
@@ -248,6 +294,8 @@ export default function Publicacao ({ route, navigation }) {
           style={styles.nome}
           source={require('../images/nome.png')}  
         />
+
+        </Skeleton>
       </View>
       </ScrollView>
     </SafeAreaView>
@@ -260,7 +308,7 @@ const styles = StyleSheet.create({
       height:50,
       borderRadius:10,
       textAlign: "center",
-      marginTop:20,
+      marginTop:10,
       borderColor: 'black',
       borderWidth: 1,
       backgroundColor: 'white'
@@ -270,7 +318,7 @@ const styles = StyleSheet.create({
       width:300,
       height:100,
       borderRadius:10,
-      marginTop:20,
+      marginTop:10,
       borderColor: 'black',
       borderWidth: 1,
       backgroundColor: 'white'

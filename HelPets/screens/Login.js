@@ -6,7 +6,8 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
+  Alert
 } from 'react-native'
 
 import {
@@ -30,6 +31,7 @@ export default function Login( {navigation, route} ) {
 
     function configureGoogleSign() {
         GoogleSignin.configure({
+          scopes: ['https://www.googleapis.com/auth/drive.photos.readonly','https://www.googleapis.com/auth/drive.readonly'],
           webClientId: WEB_CLIENT_ID,
           offlineAccess: false
         })
@@ -62,6 +64,7 @@ export default function Login( {navigation, route} ) {
             setError(error)
           }
         }
+        //Alert.alert('Login realizado com sucesso!')
       }
     
       async function getCurrentUserInfo() {
@@ -69,7 +72,7 @@ export default function Login( {navigation, route} ) {
           const userInfo = await GoogleSignin.signInSilently()
           setUserInfo(userInfo)
           setIsLoggedIn(true)
-          navigation.navigate('Publicacao', { local: route.params.local, user: userInfo })
+          //navigation.navigate('Publicacao', { local: route.params.local, user: userInfo })
         } catch (error) {
           if (error.code === statusCodes.SIGN_IN_REQUIRED) {
             // when user hasn't signed in yet
@@ -99,16 +102,17 @@ export default function Login( {navigation, route} ) {
                 style={styles.logo}
                 source={require('../images/logo_sem_fundo.png')}
             />
-            <GoogleSigninButton
-              style={styles.btnLogin}
-              size={GoogleSigninButton.Size.Wide}
-              color={GoogleSigninButton.Color.Dark}
-              onPress={() => signIn()}
-            />
-
+            <View>
+              <GoogleSigninButton
+                style={styles.btnLogin}
+                size={GoogleSigninButton.Size.Wide}
+                color={GoogleSigninButton.Color.Dark}
+                onPress={() => signIn()}
+              />
+            </View>
             <View style={styles.avisoLogin}>
               {isLoggedIn === false ? (
-                  <Text style={styles.aviso}>Realize o login para publicar!</Text>
+                  <Text style={styles.aviso}>Realize o login para publicar e visualizar suas publicações!</Text>
               ) : ( navigation.navigate('Publicacao', { local: route.params.local, user: userInfo })
               )}
             </View>
@@ -125,8 +129,8 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     },
     btnLogin: {
-      width: 250,
-      height: 50
+      width: 300,
+      height: 55
     },
     avisoLogin: {
       marginVertical: 20,
@@ -134,7 +138,8 @@ const styles = StyleSheet.create({
     },
     aviso: {
       fontSize: 20,
-      color: 'red'
+      color: 'red',
+      textAlign: 'center'
     },
     logo: {
         width: 250,
@@ -149,5 +154,5 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       backgroundColor:'#024213',
       borderRadius:10
-    }
+    },
   })

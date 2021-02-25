@@ -1,31 +1,43 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import {
   View,
   Text,
   StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  Image,
+  ImageBackground
 } from 'react-native'
 
-export default function Teste ({  }) {
+import PostItem from '../components/PostItem'
+
+export default function Postados ({ route, navigation  }) {
   return (
-    <View style ={{flex:1, flexDirection:'column'}}>
+    <SafeAreaView>
+       <ImageBackground 
+            source= {require('../images/background.jpeg')} 
+            style={styles.image}
+            blurRadius={1}>
+      <ScrollView>
+        <View style={styles.container}>
             <Text>
-                postados
+                <View>
+                    <PostItem email={route.params.userInfo.user.email} navigation={navigation}/>
+                </View>
             </Text>
-    </View>
+        </View>
+      </ScrollView>
+      </ImageBackground>
+    </SafeAreaView>
  );
 }
-
 const styles = StyleSheet.create({
-    button: {
-      alignItems: "center",
-      backgroundColor: "#00b33c",
-      padding: 20,
-      width:90,
-      borderColor: 'black',
-      borderWidth: 1,
-    },
-    caixa:{
-        left:300,
-        top: 650,
-    }
-  });
+  container:{
+    flex:1,
+    alignItems: "center"
+  },
+  image: {
+      width:'100%',
+      height:'100%'
+  },
+});
